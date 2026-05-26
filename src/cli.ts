@@ -3,6 +3,7 @@ import { loadConfig, parseMode } from "./config.js";
 import { discoverModels } from "./modelDiscovery.js";
 import { rankModels } from "./modelRanker.js";
 import { formatDecision, routeTask } from "./router.js";
+import { runSecurityCheck } from "./securityCheck.js";
 import { classifyTask } from "./taskClassifier.js";
 import { compressContextFile } from "./utils/contextCompressor.js";
 import { logger } from "./utils/logger.js";
@@ -69,6 +70,20 @@ export function createCli(): Command {
     .argument("<file>", "JSON context file")
     .action(async (file: string) => {
       logger.info(await compressContextFile(file));
+    });
+
+  program
+    .command("security-check")
+    .description("Scan the repo for common leaked secrets and unsafe local model URLs.")
+    .action(async () => {
+      const result = await runSecurityCheck();
+      if (result.findings.length > 0) {
+        logger.error("Security check failed:");
+        result.findings.forEach((finding) => logger.error(`${finding.file}: ${finding.issue}. ${finding.detail}`));
+        process.exitCode = 1;
+        return;
+      }
+      logger.info("Security check passed: no obvious secrets or unsafe local model URLs found.");
     });
 
   return program;

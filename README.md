@@ -48,6 +48,7 @@ Ranking combines task fit, benchmark intelligence, reasoning strength, coding st
 npm install
 cp .env.example .env
 npm run typecheck
+npm run security:check
 ```
 
 Add any provider keys you want to use to `.env`.
@@ -65,6 +66,28 @@ BENCHMARK_CACHE_TTL_HOURS=24
 
 API keys must stay in `.env`. Do not commit them.
 
+## Security Checks
+
+Before manually uploading, committing, or publishing changes, run:
+
+```bash
+npm run preflight
+```
+
+This runs TypeScript validation and scans for common leaked secrets, bearer tokens, GitHub tokens, and unsafe non-local Ollama URLs.
+
+You can also run the scanner from the CLI:
+
+```bash
+npm run dev -- security-check
+```
+
+Keep private tasks in `private` mode when possible:
+
+```bash
+npm run dev -- route "Review this private document" --mode private
+```
+
 ## Example Commands
 
 ```bash
@@ -72,6 +95,7 @@ npm run dev -- discover
 npm run dev -- rank "Fix this TypeScript repo error"
 npm run dev -- route "Translate this page into all supported languages"
 npm run dev -- compress-context ./examples/permitready-task.json
+npm run dev -- security-check
 ```
 
 ## Legal Usage Warning
