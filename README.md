@@ -4,6 +4,8 @@ Best-AI Finder Router is a legal AI orchestration CLI that discovers available A
 
 It is built around one question: **what is the best currently available AI for this exact task under the selected mode?**
 
+For the shortest setup path, see [QUICKSTART.md](./QUICKSTART.md).
+
 ## What It Does
 
 - Discovers models from official provider APIs and lawful catalogs.
@@ -96,6 +98,7 @@ npm run dev -- rank "Fix this TypeScript repo error"
 npm run dev -- route "Translate this page into all supported languages"
 npm run dev -- compress-context ./examples/permitready-task.json
 npm run dev -- security-check
+npm run dev -- setup-keys --create-env
 ```
 
 ## Legal Usage Warning

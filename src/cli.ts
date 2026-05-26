@@ -1,5 +1,6 @@
 import { Command } from "commander";
 import { loadConfig, parseMode } from "./config.js";
+import { ensureEnvFile, formatKeySetupGuide } from "./keySetup.js";
 import { discoverModels } from "./modelDiscovery.js";
 import { rankModels } from "./modelRanker.js";
 import { formatDecision, routeTask } from "./router.js";
@@ -84,6 +85,19 @@ export function createCli(): Command {
         return;
       }
       logger.info("Security check passed: no obvious secrets or unsafe local model URLs found.");
+    });
+
+  program
+    .command("setup-keys")
+    .description("Show official API key pages and create a local .env file when needed.")
+    .option("--create-env", "Create .env from .env.example if it does not exist")
+    .action(async (options: { createEnv?: boolean }) => {
+      if (options.createEnv) {
+        const status = await ensureEnvFile();
+        logger.info(status === "created" ? "Created .env from .env.example." : ".env already exists; leaving it unchanged.");
+        logger.info("");
+      }
+      logger.info(formatKeySetupGuide());
     });
 
   return program;
