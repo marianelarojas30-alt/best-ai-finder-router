@@ -1,0 +1,41 @@
+{
+  "updatedAt": "2026-05-26T00:00:00.000Z",
+  "sourcePolicy": "Manual benchmark cache. Update only from lawful public sources, official reports, papers, or sources with permitted reuse.",
+  "models": {
+    "gpt-5": {
+      "reasoning": 96,
+      "coding": 94,
+      "intelligence": 97,
+      "speed": 65,
+      "costEfficiency": 35
+    },
+    "claude-opus-4-1": {
+      "reasoning": 96,
+      "coding": 95,
+      "intelligence": 96,
+      "speed": 62,
+      "costEfficiency": 32
+    },
+    "claude-sonnet-4-5": {
+      "reasoning": 92,
+      "coding": 96,
+      "intelligence": 93,
+      "speed": 82,
+      "costEfficiency": 72
+    },
+    "openrouter/auto": {
+      "reasoning": 78,
+      "coding": 76,
+      "intelligence": 78,
+      "speed": 66,
+      "costEfficiency": 70
+    },
+    "llama3.1:8b": {
+      "reasoning": 58,
+      "coding": 56,
+      "intelligence": 55,
+      "speed": 86,
+      "costEfficiency": 100
+    }
+  }
+}
