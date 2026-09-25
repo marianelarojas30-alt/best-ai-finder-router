@@ -18,16 +18,18 @@ export interface DiscoveryResult {
 
 const rootDir = join(dirname(fileURLToPath(import.meta.url)), "..");
 
-export async function discoverModels(config: AppConfig): Promise<DiscoveryResult> {
+export async function discoverModels(config: AppConfig, localOnly = false): Promise<DiscoveryResult> {
   const notices: string[] = [];
   const discovered: ModelInfo[] = [];
 
-  const sources = [
-    ["OpenAI", () => discoverOpenAIModels(config)],
-    ["Anthropic", () => discoverAnthropicModels(config)],
-    ["OpenRouter", () => discoverOpenRouterModels(config)],
-    ["Ollama", () => discoverOllamaModels(config)]
-  ] as const;
+  const sources = localOnly
+    ? ([["Ollama", () => discoverOllamaModels(config)]] as const)
+    : ([
+        ["OpenAI", () => discoverOpenAIModels(config)],
+        ["Anthropic", () => discoverAnthropicModels(config)],
+        ["OpenRouter", () => discoverOpenRouterModels(config)],
+        ["Ollama", () => discoverOllamaModels(config)]
+      ] as const);
 
   for (const [name, discover] of sources) {
     try {
