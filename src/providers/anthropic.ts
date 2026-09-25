@@ -45,21 +45,21 @@ export const anthropicProvider = {
   supportsModel(model: string): boolean {
     return model.includes("claude");
   },
-  maxContextTokens(): number {
-    return 200000;
+  maxContextTokens(model: string): number {
+    return inferAnthropicContext(model);
   }
 };
 
 function toAnthropicModel(model: AnthropicModel): ModelInfo {
   const lower = model.id.toLowerCase();
-  const frontier = /opus|sonnet-4|4-5|4\.5/.test(lower);
+  const frontier = /opus|fable|sonnet-5|sonnet-4|4-5|4\.5/.test(lower);
   const fast = /haiku/.test(lower);
   return {
     id: model.id,
     provider: "anthropic",
     displayName: model.display_name ?? model.id,
     enabled: true,
-    contextWindow: 200000,
+    contextWindow: inferAnthropicContext(model.id),
     costTier: /opus/.test(lower) ? "high" : /haiku/.test(lower) ? "low" : "medium",
     speedTier: fast ? "fast" : "medium",
     qualityTier: frontier ? "frontier" : "strong",
@@ -72,4 +72,11 @@ function toAnthropicModel(model: AnthropicModel): ModelInfo {
     discoveredFrom: "live",
     availability: "available"
   };
+}
+
+
+function inferAnthropicContext(model: string): number {
+  const lower = model.toLowerCase();
+  if (/claude-(opus-5|opus-5-5|sonnet-5|fable-5)/.test(lower)) return 1000000;
+  return 200000;
 }
