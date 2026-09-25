@@ -31,14 +31,26 @@ export async function discoverModels(config: AppConfig, localOnly = false): Prom
         ["Ollama", () => discoverOllamaModels(config)]
       ] as const);
 
-  for (const [name, discover] of sources) {
-    try {
-      const models = await discover();
-      if (models.length === 0) notices.push(`${name}: no live models discovered; credentials or service may be absent.`);
-      discovered.push(...models);
-    } catch (error) {
-      notices.push(`${name}: ${(error as Error).message}`);
+  const discoveryResults = await Promise.all(
+    sources.map(async ([name, discover]) => {
+      try {
+        const models = await discover();
+        return { name, models, error: undefined as string | undefined };
+      } catch (error) {
+        return { name, models: [] as ModelInfo[], error: (error as Error).message };
+      }
+    })
+  );
+
+  for (const result of discoveryResults) {
+    if (result.error) {
+      notices.push(`${result.name}: ${result.error}`);
+      continue;
     }
+    if (result.models.length === 0) {
+      notices.push(`${result.name}: no live models discovered; credentials or service may be absent.`);
+    }
+    discovered.push(...result.models);
   }
 
   const benchmarks = await discoverBenchmarkSignals();
