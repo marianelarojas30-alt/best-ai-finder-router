@@ -24,6 +24,13 @@ export const providerKeyInfo: ProviderKeyInfo[] = [
     notes: ["Create a secret key in the OpenAI platform.", "Set usage limits in your OpenAI billing settings."]
   },
   {
+    provider: "Google Gemini",
+    envVar: "GEMINI_API_KEY",
+    keyPage: "https://aistudio.google.com/app/apikey",
+    docsPage: "https://ai.google.dev/gemini-api/docs/api-key",
+    notes: ["Create the key in Google AI Studio.", "The key is sent in the x-goog-api-key header, not embedded in request URLs."]
+  },
+  {
     provider: "OpenRouter",
     envVar: "OPENROUTER_API_KEY",
     keyPage: "https://openrouter.ai/settings/keys",
