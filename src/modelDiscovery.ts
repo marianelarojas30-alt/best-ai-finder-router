@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url";
 import { AppConfig } from "./config.js";
 import { discoverAnthropicModels } from "./discovery/anthropicDiscovery.js";
 import { discoverBenchmarkSignals } from "./discovery/benchmarkDiscovery.js";
+import { discoverGeminiModels } from "./discovery/geminiDiscovery.js";
 import { discoverOllamaModels } from "./discovery/ollamaDiscovery.js";
 import { discoverOpenAIModels } from "./discovery/openaiDiscovery.js";
 import { discoverOpenRouterModels } from "./discovery/openrouterDiscovery.js";
@@ -27,6 +28,7 @@ export async function discoverModels(config: AppConfig, localOnly = false): Prom
     : ([
         ["OpenAI", () => discoverOpenAIModels(config)],
         ["Anthropic", () => discoverAnthropicModels(config)],
+        ["Gemini", () => discoverGeminiModels(config)],
         ["OpenRouter", () => discoverOpenRouterModels(config)],
         ["Ollama", () => discoverOllamaModels(config)]
       ] as const);
@@ -63,6 +65,15 @@ export async function discoverModels(config: AppConfig, localOnly = false): Prom
 
   if (liveModels.length > 0) {
     return { models: liveModels, usedLiveDiscovery: true, usedCache: false, notices };
+  }
+
+  if (localOnly) {
+    return {
+      models: [],
+      usedLiveDiscovery: false,
+      usedCache: false,
+      notices: [...notices, "Private mode does not fall back to static model cache when local Ollama discovery fails."]
+    };
   }
 
   const cachedModels = await readJsonCache<ModelInfo[]>(join(rootDir, "data/model-cache.json"), fallbackModels);
