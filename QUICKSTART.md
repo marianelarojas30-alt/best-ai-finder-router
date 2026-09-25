@@ -47,6 +47,7 @@ Add only the keys you have:
 ```bash
 OPENAI_API_KEY=
 ANTHROPIC_API_KEY=
+GEMINI_API_KEY=
 OPENROUTER_API_KEY=
 OLLAMA_BASE_URL=http://localhost:11434
 DEFAULT_MODE=best
@@ -69,7 +70,7 @@ Mode meaning:
 - `best`: quality first
 - `balanced`: quality, speed, and cost
 - `budget`: cheapest model that passes the quality gate
-- `private`: local Ollama first
+- `private`: local Ollama only; fails closed if local discovery is unavailable
 
 ## 6. Optional Global Command
 
