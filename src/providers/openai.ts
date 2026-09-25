@@ -44,8 +44,8 @@ export const openaiProvider = {
 
 function toOpenAIModel(id: string): ModelInfo {
   const lower = id.toLowerCase();
-  const frontier = /gpt-5|gpt-4\.1|o3|o4/.test(lower);
-  const budget = /mini|nano/.test(lower);
+  const frontier = /gpt-6-(astra|sol)|gpt-5|gpt-4\.1|o3|o4/.test(lower);
+  const budget = /mini|nano|gpt-6-luna/.test(lower);
   return {
     id,
     provider: "openai",
@@ -55,10 +55,10 @@ function toOpenAIModel(id: string): ModelInfo {
     costTier: budget ? "low" : frontier ? "high" : "medium",
     speedTier: budget ? "fast" : "medium",
     qualityTier: frontier ? "frontier" : budget ? "strong" : "unknown",
-    supportsVision: /gpt-4|gpt-5|omni|vision/i.test(id),
+    supportsVision: /gpt-4|gpt-5|gpt-6|omni|vision/i.test(id),
     supportsLongContext: (inferOpenAIContext(id) ?? 0) >= 128000,
     supportsCoding: /gpt|o\d/i.test(id),
-    supportsReasoning: /gpt-5|o\d|reason/i.test(id),
+    supportsReasoning: /gpt-5|gpt-6|o\d|reason/i.test(id),
     supportsMultilingual: /gpt|o\d/i.test(id),
     recommendedUseCases: ["general assistant task", "coding", "complex reasoning"],
     discoveredFrom: "live",
@@ -68,6 +68,7 @@ function toOpenAIModel(id: string): ModelInfo {
 
 function inferOpenAIContext(model: string): number | undefined {
   const lower = model.toLowerCase();
+  if (lower.includes("gpt-6")) return 1050000;
   if (lower.includes("gpt-5")) return 400000;
   if (lower.includes("gpt-4.1")) return 1000000;
   if (lower.includes("o3") || lower.includes("o4")) return 200000;
