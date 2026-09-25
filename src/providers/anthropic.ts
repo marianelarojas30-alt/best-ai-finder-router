@@ -17,7 +17,8 @@ export const anthropicProvider = {
       headers: {
         "x-api-key": config.ANTHROPIC_API_KEY,
         "anthropic-version": "2023-06-01"
-      }
+      },
+      signal: AbortSignal.timeout(8_000)
     });
     if (!response.ok) throw new Error(`Anthropic discovery failed: ${response.status}`);
     const payload = (await response.json()) as { data?: AnthropicModel[] };
@@ -36,7 +37,8 @@ export const anthropicProvider = {
         model,
         max_tokens: 2048,
         messages: [{ role: "user", content: prompt }]
-      })
+      }),
+      signal: AbortSignal.timeout(120_000)
     });
     if (!response.ok) throw new Error(`Anthropic request failed: ${response.status}`);
     const payload = (await response.json()) as { content?: Array<{ text?: string }> };
