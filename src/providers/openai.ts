@@ -14,7 +14,8 @@ export const openaiProvider = {
   async discoverModels(config: AppConfig): Promise<ModelInfo[]> {
     if (!config.OPENAI_API_KEY) return [];
     const response = await fetch("https://api.openai.com/v1/models", {
-      headers: { Authorization: `Bearer ${config.OPENAI_API_KEY}` }
+      headers: { Authorization: `Bearer ${config.OPENAI_API_KEY}` },
+      signal: AbortSignal.timeout(8_000)
     });
     if (!response.ok) throw new Error(`OpenAI discovery failed: ${response.status}`);
     const payload = (await response.json()) as { data?: OpenAIModel[] };
@@ -28,7 +29,8 @@ export const openaiProvider = {
         Authorization: `Bearer ${config.OPENAI_API_KEY}`,
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ model, input: prompt })
+      body: JSON.stringify({ model, input: prompt }),
+      signal: AbortSignal.timeout(120_000)
     });
     if (!response.ok) throw new Error(`OpenAI request failed: ${response.status}`);
     const payload = (await response.json()) as { output_text?: string };
@@ -44,15 +46,18 @@ export const openaiProvider = {
 
 function toOpenAIModel(id: string): ModelInfo {
   const lower = id.toLowerCase();
-  const frontier = /gpt-6-(astra|sol)|gpt-5|gpt-4\.1|o3|o4/.test(lower);
-  const budget = /mini|nano|gpt-6-luna/.test(lower);
+  const astra = lower.includes("gpt-6-astra");
+  const sol = lower.includes("gpt-6-sol");
+  const luna = lower.includes("gpt-6-luna");
+  const frontier = astra || sol || /gpt-5|gpt-4\.1|o3|o4/.test(lower);
+  const budget = luna || /mini|nano/.test(lower);
   return {
     id,
     provider: "openai",
     displayName: id,
     enabled: true,
     contextWindow: inferOpenAIContext(id),
-    costTier: budget ? "low" : frontier ? "high" : "medium",
+    costTier: budget ? "low" : sol ? "medium" : frontier ? "high" : "medium",
     speedTier: budget ? "fast" : "medium",
     qualityTier: frontier ? "frontier" : budget ? "strong" : "unknown",
     supportsVision: /gpt-4|gpt-5|gpt-6|omni|vision/i.test(id),
