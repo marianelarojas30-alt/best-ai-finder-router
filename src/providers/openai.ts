@@ -33,8 +33,19 @@ export const openaiProvider = {
       signal: AbortSignal.timeout(120_000)
     });
     if (!response.ok) throw new Error(`OpenAI request failed: ${response.status}`);
-    const payload = (await response.json()) as { output_text?: string };
-    return payload.output_text ?? JSON.stringify(payload);
+    const payload = (await response.json()) as {
+      output?: Array<{
+        type?: string;
+        content?: Array<{ type?: string; text?: string }>;
+      }>;
+    };
+    const text = (payload.output ?? [])
+      .filter((item) => item.type === "message")
+      .flatMap((item) => item.content ?? [])
+      .filter((part) => part.type === "output_text")
+      .map((part) => part.text ?? "")
+      .join("");
+    return text || JSON.stringify(payload);
   },
   supportsModel(model: string): boolean {
     return /^gpt-|^o\d|^chatgpt/i.test(model);
