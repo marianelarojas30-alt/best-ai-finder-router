@@ -19,7 +19,9 @@ export const openaiProvider = {
     });
     if (!response.ok) throw new Error(`OpenAI discovery failed: ${response.status}`);
     const payload = (await response.json()) as { data?: OpenAIModel[] };
-    return (payload.data ?? []).map((model) => toOpenAIModel(model.id));
+    return (payload.data ?? [])
+      .filter((model) => isTextGenerationModel(model.id))
+      .map((model) => toOpenAIModel(model.id));
   },
   async sendMessage(model: string, prompt: string, config: AppConfig): Promise<string> {
     if (!config.OPENAI_API_KEY) throw new Error("OPENAI_API_KEY is required.");
@@ -48,7 +50,7 @@ export const openaiProvider = {
     return text || JSON.stringify(payload);
   },
   supportsModel(model: string): boolean {
-    return /^gpt-|^o\d|^chatgpt/i.test(model);
+    return isTextGenerationModel(model);
   },
   maxContextTokens(model: string): number | undefined {
     return inferOpenAIContext(model);
@@ -90,4 +92,23 @@ function inferOpenAIContext(model: string): number | undefined {
   if (lower.includes("o3") || lower.includes("o4")) return 200000;
   if (lower.includes("gpt-4o")) return 128000;
   return undefined;
+}
+
+
+function isTextGenerationModel(model: string): boolean {
+  const lower = model.toLowerCase();
+  const excluded = [
+    "image",
+    "realtime",
+    "live",
+    "audio",
+    "tts",
+    "transcribe",
+    "whisper",
+    "embedding",
+    "moderation",
+    "dall-e"
+  ];
+  if (excluded.some((part) => lower.includes(part))) return false;
+  return /^gpt-|^o\d|^chatgpt/i.test(model);
 }
