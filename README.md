@@ -118,4 +118,4 @@ Use this tool only with provider-approved APIs, user-owned credentials, public c
 
 ## 2026 model catalog baseline
 
-The bundled fallback catalog currently recognizes GPT-6 Astra/Sol/Luna, Claude Opus 5.5/Sonnet 5/Haiku 4.5, Gemini 3.8 Flash/3.5 Flash-Lite, OpenRouter Auto, and local Qwen 3.5. Live provider discovery remains preferred so future model releases do not require an immediate code change.
+The bundled fallback catalog currently recognizes GPT-6 Astra/Sol/Luna, Claude Fable 5/Opus 5/Sonnet 5/Haiku 4.5, Gemini 3.8 Flash/3.5 Flash-Lite, OpenRouter Auto, and local Qwen 3.5. Live provider discovery remains preferred so future model releases do not require an immediate code change.
