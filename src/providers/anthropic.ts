@@ -79,6 +79,6 @@ function toAnthropicModel(model: AnthropicModel): ModelInfo {
 
 function inferAnthropicContext(model: string): number {
   const lower = model.toLowerCase();
-  if (/claude-(opus-5|opus-5-5|sonnet-5|fable-5)/.test(lower)) return 1000000;
+  if (/claude-(fable-5|opus-5|sonnet-5)/.test(lower)) return 1000000;
   return 200000;
 }
