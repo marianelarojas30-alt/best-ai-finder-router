@@ -16,21 +16,33 @@ export interface RouteDecision {
 
 export async function routeTask(prompt: string, mode: RoutingMode, config: AppConfig): Promise<RouteDecision> {
   const task = classifyTask(prompt);
-  const discovery = await discoverModels(config);
+
+  if (mode === "private" && !isLoopbackOllama(config.OLLAMA_BASE_URL)) {
+    throw new Error("Private mode requires OLLAMA_BASE_URL to use localhost, 127.0.0.1, or ::1.");
+  }
+
+  const discovery = await discoverModels(config, mode === "private");
   const ranked = rankModels(discovery.models, task, mode);
-  if (!ranked[0]) throw new Error("No enabled models passed the minimum quality gate.");
+  const eligible = mode === "private"
+    ? ranked.filter((candidate) => candidate.model.provider === "ollama")
+    : ranked;
+
+  if (!eligible[0]) {
+    if (mode === "private") {
+      throw new Error("Private mode requires an available local Ollama model. No remote provider will be selected.");
+    }
+    throw new Error("No enabled models passed the minimum quality gate.");
+  }
 
   const warning =
-    mode === "private" && ranked[0].model.provider !== "ollama"
-      ? "Private mode requested local models, but no local model ranked strongly enough. Review before sending sensitive data."
-      : mode === "private" && task.qualityFloor !== "basic" && ranked[0].model.qualityTier === "basic"
-        ? "Private mode selected a basic local model for a complex task. Consider rerouting to a stronger model if quality matters."
-        : undefined;
+    mode === "private" && task.qualityFloor !== "basic" && eligible[0].model.qualityTier === "basic"
+      ? "Private mode selected a basic local model for a complex task. Data remains local, but quality may be limited."
+      : undefined;
 
   return {
     task,
-    selected: ranked[0],
-    runnersUp: ranked.slice(1, 4),
+    selected: eligible[0],
+    runnersUp: eligible.slice(1, 4),
     usedLiveDiscovery: discovery.usedLiveDiscovery,
     usedCache: discovery.usedCache,
     notices: discovery.notices,
@@ -62,4 +74,16 @@ export function formatDecision(decision: RouteDecision): string {
 
 function asBullets(items: string[]): string[] {
   return items.map((item) => `- ${item}`);
+}
+
+
+function isLoopbackOllama(value: string | undefined): boolean {
+  if (!value) return false;
+  try {
+    const url = new URL(value);
+    const host = url.hostname.toLowerCase();
+    return host === "localhost" || host === "127.0.0.1" || host === "::1";
+  } catch {
+    return false;
+  }
 }

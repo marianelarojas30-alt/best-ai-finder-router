@@ -27,6 +27,7 @@ The strongest model for a task changes as providers release new models, pricing 
 
 - OpenAI: uses the official models endpoint when `OPENAI_API_KEY` is present.
 - Anthropic: uses Anthropic's official Models API when `ANTHROPIC_API_KEY` is present.
+- Gemini: uses Google's official Gemini models endpoint when `GEMINI_API_KEY` is present.
 - OpenRouter: uses OpenRouter's public model catalog when `OPENROUTER_API_KEY` is present.
 - Ollama: queries the local Ollama API when `OLLAMA_BASE_URL` is present.
 - Benchmarks: reads lawful benchmark signals from `data/benchmark-cache.json`; live benchmark ingestion is intentionally conservative.
@@ -42,7 +43,7 @@ Ranking combines task fit, benchmark intelligence, reasoning strength, coding st
 - `best`: prioritizes capability and quality above cost.
 - `balanced`: balances quality, speed, and cost.
 - `budget`: prefers the cheapest model that passes the minimum quality gate.
-- `private`: prefers local Ollama models and warns when available local models look too weak for the task.
+- `private`: uses live local Ollama discovery only, requires a loopback Ollama URL, and fails closed instead of selecting a remote or cached model.
 
 ## Setup
 
@@ -60,6 +61,7 @@ Add any provider keys you want to use to `.env`.
 ```bash
 OPENAI_API_KEY=...
 ANTHROPIC_API_KEY=...
+GEMINI_API_KEY=...
 OPENROUTER_API_KEY=...
 OLLAMA_BASE_URL=http://localhost:11434
 DEFAULT_MODE=best
@@ -112,3 +114,8 @@ Use this tool only with provider-approved APIs, user-owned credentials, public c
 - Add optional benchmark importers for explicitly permitted sources.
 - Add reliability scoring from user-approved telemetry.
 - Add structured JSON output for CI workflows.
+
+
+## 2026 model catalog baseline
+
+The bundled fallback catalog currently recognizes GPT-6 Astra/Sol/Luna, Claude Fable 5/Opus 5/Sonnet 5/Haiku 4.5, Gemini 3.8 Flash/3.5 Flash-Lite, OpenRouter Auto, and local Qwen 3.5. Live provider discovery remains preferred so future model releases do not require an immediate code change.

@@ -17,7 +17,8 @@ export const openrouterProvider = {
   async discoverModels(config: AppConfig): Promise<ModelInfo[]> {
     if (!config.OPENROUTER_API_KEY) return [];
     const response = await fetch("https://openrouter.ai/api/v1/models", {
-      headers: { Authorization: `Bearer ${config.OPENROUTER_API_KEY}` }
+      headers: { Authorization: `Bearer ${config.OPENROUTER_API_KEY}` },
+      signal: AbortSignal.timeout(8_000)
     });
     if (!response.ok) throw new Error(`OpenRouter discovery failed: ${response.status}`);
     const payload = (await response.json()) as { data?: OpenRouterModel[] };
@@ -31,7 +32,8 @@ export const openrouterProvider = {
         Authorization: `Bearer ${config.OPENROUTER_API_KEY}`,
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ model, messages: [{ role: "user", content: prompt }] })
+      body: JSON.stringify({ model, messages: [{ role: "user", content: prompt }] }),
+      signal: AbortSignal.timeout(120_000)
     });
     if (!response.ok) throw new Error(`OpenRouter request failed: ${response.status}`);
     const payload = (await response.json()) as { choices?: Array<{ message?: { content?: string } }> };
@@ -57,11 +59,11 @@ function toOpenRouterModel(model: OpenRouterModel): ModelInfo {
     contextWindow: model.context_length,
     costTier: lowCost ? "low" : price > 0.00001 ? "high" : "medium",
     speedTier: "unknown",
-    qualityTier: /opus|gpt-5|sonnet|gemini.*pro|deepseek/i.test(model.id) ? "frontier" : "strong",
+    qualityTier: /opus|gpt-6|gpt-5|sonnet-5|sonnet|gemini-3\.8-flash|gemini.*pro|deepseek/i.test(model.id) ? "frontier" : "strong",
     supportsVision: vision,
     supportsLongContext: (model.context_length ?? 0) >= 128000,
     supportsCoding: /code|coder|gpt|claude|deepseek|qwen/i.test(model.id),
-    supportsReasoning: /reason|thinking|o3|o4|gpt-5|claude|deepseek/i.test(model.id),
+    supportsReasoning: /reason|thinking|o3|o4|gpt-6|gpt-5|claude|gemini|deepseek/i.test(model.id),
     supportsMultilingual: true,
     recommendedUseCases: ["general assistant task", "model comparison"],
     discoveredFrom: "live",

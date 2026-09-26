@@ -1,6 +1,6 @@
 {
   "name": "best-ai-finder-router",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A legal AI orchestration CLI that discovers, ranks, and routes tasks to the best available AI.",
   "type": "module",
   "bin": {
