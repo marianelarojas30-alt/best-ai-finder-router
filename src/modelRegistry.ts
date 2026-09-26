@@ -82,9 +82,9 @@ export const fallbackModels: ModelInfo[] = [
     recommendedUseCases: ["budget", "high-volume", "general assistant task", "translation"]
   },
   {
-    id: "claude-opus-5-5",
+    id: "claude-fable-5",
     provider: "anthropic",
-    displayName: "Claude Opus 5.5",
+    displayName: "Claude Fable 5",
     enabled: true,
     contextWindow: 1000000,
     costTier: "high",
@@ -95,7 +95,23 @@ export const fallbackModels: ModelInfo[] = [
     supportsCoding: true,
     supportsReasoning: true,
     supportsMultilingual: true,
-    recommendedUseCases: ["complex reasoning", "coding", "long-context document review", "agentic workflows"]
+    recommendedUseCases: ["long-horizon agents", "complex reasoning", "coding", "long-context document review"]
+  },
+  {
+    id: "claude-opus-5",
+    provider: "anthropic",
+    displayName: "Claude Opus 5",
+    enabled: true,
+    contextWindow: 1000000,
+    costTier: "high",
+    speedTier: "medium",
+    qualityTier: "frontier",
+    supportsVision: true,
+    supportsLongContext: true,
+    supportsCoding: true,
+    supportsReasoning: true,
+    supportsMultilingual: true,
+    recommendedUseCases: ["complex analysis", "coding", "creative work", "deep reasoning"]
   },
   {
     id: "claude-sonnet-5",
