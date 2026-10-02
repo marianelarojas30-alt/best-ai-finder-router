@@ -15,7 +15,7 @@
     "preflight": "npm run typecheck && npm run security:check"
   },
   "dependencies": {
-    "commander": "^14.0.2",
+    "commander": "^15.0.0",
     "dotenv": "^17.2.3",
     "zod": "^4.1.12"
   },
