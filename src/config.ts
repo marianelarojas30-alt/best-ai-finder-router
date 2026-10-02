@@ -7,6 +7,7 @@ dotenv.config({ quiet: true });
 const configSchema = z.object({
   OPENAI_API_KEY: z.string().optional(),
   ANTHROPIC_API_KEY: z.string().optional(),
+  GEMINI_API_KEY: z.string().optional(),
   OPENROUTER_API_KEY: z.string().optional(),
   OLLAMA_BASE_URL: z.string().url().optional(),
   DEFAULT_MODE: z.enum(["best", "balanced", "budget", "private"]).default("best"),

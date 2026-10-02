@@ -9,7 +9,8 @@ const secretPatterns = [
   { name: "OpenAI-style API key", pattern: /sk-[A-Za-z0-9_-]{20,}/g },
   { name: "Anthropic-style API key", pattern: /sk-ant-[A-Za-z0-9_-]{20,}/g },
   { name: "Generic bearer token", pattern: /Bearer\s+[A-Za-z0-9._-]{24,}/g },
-  { name: "GitHub token", pattern: /gh[pousr]_[A-Za-z0-9_]{20,}/g }
+  { name: "GitHub token", pattern: /gh[pousr]_[A-Za-z0-9_]{20,}/g },
+  { name: "Google API key", pattern: /AIza[0-9A-Za-z_-]{35}/g }
 ];
 
 const envRiskPatterns = [
