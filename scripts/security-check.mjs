@@ -9,13 +9,14 @@ const secretPatterns = [
   { name: "OpenAI-style API key", pattern: /sk-[A-Za-z0-9_-]{20,}/g },
   { name: "Anthropic-style API key", pattern: /sk-ant-[A-Za-z0-9_-]{20,}/g },
   { name: "Generic bearer token", pattern: /Bearer\s+[A-Za-z0-9._-]{24,}/g },
-  { name: "GitHub token", pattern: /gh[pousr]_[A-Za-z0-9_]{20,}/g }
+  { name: "GitHub token", pattern: /gh[pousr]_[A-Za-z0-9_]{20,}/g },
+  { name: "Google API key", pattern: /AIza[0-9A-Za-z_-]{35}/g }
 ];
 
 const envRiskPatterns = [
   {
     name: "Public Ollama URL",
-    pattern: /OLLAMA_BASE_URL\s*=\s*https?:\/\/(?!localhost|127\.0\.0\.1|\[?::1\]?)/i,
+    pattern: /OLLAMA_BASE_URL\s*=\s*["']?https?:\/\/(?!(?:localhost|127\.0\.0\.1|\[::1\])(?::\d+)?(?:[\/\s"']|$))/im,
     message: "Keep OLLAMA_BASE_URL on localhost unless you intentionally secured remote access."
   }
 ];

@@ -42,7 +42,7 @@ export function createCli(): Command {
       const config = loadConfig();
       const mode = parseMode(options.mode ?? program.opts<{ mode?: string }>().mode, config);
       const task = classifyTask(taskText);
-      const discovery = await discoverModels(config);
+      const discovery = await discoverModels(config, mode === "private");
       const ranked = rankModels(discovery.models, task, mode);
       logger.info(`Task type: ${task.type}`);
       logger.info(`Mode: ${mode}`);

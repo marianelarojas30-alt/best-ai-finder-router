@@ -1,4 +1,4 @@
-export type ProviderName = "openai" | "anthropic" | "openrouter" | "ollama";
+export type ProviderName = "openai" | "anthropic" | "gemini" | "openrouter" | "ollama";
 export type CostTier = "low" | "medium" | "high" | "unknown";
 export type SpeedTier = "slow" | "medium" | "fast" | "unknown";
 export type QualityTier = "basic" | "strong" | "frontier" | "unknown";
@@ -34,11 +34,11 @@ export interface ModelInfo {
 
 export const fallbackModels: ModelInfo[] = [
   {
-    id: "gpt-5",
+    id: "gpt-6-astra",
     provider: "openai",
-    displayName: "GPT-5",
+    displayName: "GPT-6 Astra",
     enabled: true,
-    contextWindow: 400000,
+    contextWindow: 1050000,
     costTier: "high",
     speedTier: "medium",
     qualityTier: "frontier",
@@ -50,11 +50,43 @@ export const fallbackModels: ModelInfo[] = [
     recommendedUseCases: ["complex reasoning", "coding", "repo analysis", "multimodal/image analysis"]
   },
   {
-    id: "claude-opus-4-1",
-    provider: "anthropic",
-    displayName: "Claude Opus 4.1",
+    id: "gpt-6-sol",
+    provider: "openai",
+    displayName: "GPT-6 Sol",
     enabled: true,
-    contextWindow: 200000,
+    contextWindow: 1050000,
+    costTier: "medium",
+    speedTier: "medium",
+    qualityTier: "frontier",
+    supportsVision: true,
+    supportsLongContext: true,
+    supportsCoding: true,
+    supportsReasoning: true,
+    supportsMultilingual: true,
+    recommendedUseCases: ["coding", "agentic workflows", "complex reasoning", "balanced assistant task"]
+  },
+  {
+    id: "gpt-6-luna",
+    provider: "openai",
+    displayName: "GPT-6 Luna",
+    enabled: true,
+    contextWindow: 1050000,
+    costTier: "low",
+    speedTier: "fast",
+    qualityTier: "strong",
+    supportsVision: true,
+    supportsLongContext: true,
+    supportsCoding: true,
+    supportsReasoning: true,
+    supportsMultilingual: true,
+    recommendedUseCases: ["budget", "high-volume", "general assistant task", "translation"]
+  },
+  {
+    id: "claude-fable-5",
+    provider: "anthropic",
+    displayName: "Claude Fable 5",
+    enabled: true,
+    contextWindow: 1000000,
     costTier: "high",
     speedTier: "medium",
     qualityTier: "frontier",
@@ -63,14 +95,30 @@ export const fallbackModels: ModelInfo[] = [
     supportsCoding: true,
     supportsReasoning: true,
     supportsMultilingual: true,
-    recommendedUseCases: ["complex reasoning", "coding", "legal-style drafting", "long-context document review"]
+    recommendedUseCases: ["long-horizon agents", "complex reasoning", "coding", "long-context document review"]
   },
   {
-    id: "claude-sonnet-4-5",
+    id: "claude-opus-5",
     provider: "anthropic",
-    displayName: "Claude Sonnet 4.5",
+    displayName: "Claude Opus 5",
     enabled: true,
-    contextWindow: 200000,
+    contextWindow: 1000000,
+    costTier: "high",
+    speedTier: "medium",
+    qualityTier: "frontier",
+    supportsVision: true,
+    supportsLongContext: true,
+    supportsCoding: true,
+    supportsReasoning: true,
+    supportsMultilingual: true,
+    recommendedUseCases: ["complex analysis", "coding", "creative work", "deep reasoning"]
+  },
+  {
+    id: "claude-sonnet-5",
+    provider: "anthropic",
+    displayName: "Claude Sonnet 5",
+    enabled: true,
+    contextWindow: 1000000,
     costTier: "medium",
     speedTier: "fast",
     qualityTier: "frontier",
@@ -80,6 +128,54 @@ export const fallbackModels: ModelInfo[] = [
     supportsReasoning: true,
     supportsMultilingual: true,
     recommendedUseCases: ["coding", "debugging", "repo analysis", "balanced assistant task"]
+  },
+  {
+    id: "claude-haiku-4-5-20251001",
+    provider: "anthropic",
+    displayName: "Claude Haiku 4.5",
+    enabled: true,
+    contextWindow: 200000,
+    costTier: "low",
+    speedTier: "fast",
+    qualityTier: "strong",
+    supportsVision: true,
+    supportsLongContext: true,
+    supportsCoding: true,
+    supportsReasoning: true,
+    supportsMultilingual: true,
+    recommendedUseCases: ["budget", "fast classification", "summarization", "general assistant task"]
+  },
+  {
+    id: "gemini-3.8-flash",
+    provider: "gemini",
+    displayName: "Gemini 3.8 Flash",
+    enabled: true,
+    contextWindow: 1000000,
+    costTier: "medium",
+    speedTier: "fast",
+    qualityTier: "frontier",
+    supportsVision: true,
+    supportsLongContext: true,
+    supportsCoding: true,
+    supportsReasoning: true,
+    supportsMultilingual: true,
+    recommendedUseCases: ["coding", "agentic workflows", "long-context", "multimodal/image analysis"]
+  },
+  {
+    id: "gemini-3.5-flash-lite",
+    provider: "gemini",
+    displayName: "Gemini 3.5 Flash-Lite",
+    enabled: true,
+    contextWindow: 1000000,
+    costTier: "low",
+    speedTier: "fast",
+    qualityTier: "strong",
+    supportsVision: true,
+    supportsLongContext: true,
+    supportsCoding: true,
+    supportsReasoning: true,
+    supportsMultilingual: true,
+    recommendedUseCases: ["budget", "high-volume", "translation", "general assistant task"]
   },
   {
     id: "openrouter/auto",
@@ -98,19 +194,20 @@ export const fallbackModels: ModelInfo[] = [
     recommendedUseCases: ["general assistant task", "routing fallback", "translation"]
   },
   {
-    id: "llama3.1:8b",
+    id: "qwen3.5:4b",
     provider: "ollama",
-    displayName: "Llama 3.1 8B",
+    displayName: "Qwen 3.5 4B",
     enabled: true,
-    contextWindow: 128000,
+    contextWindow: 256000,
     costTier: "low",
     speedTier: "fast",
     qualityTier: "basic",
+    supportsVision: true,
     supportsLongContext: true,
     supportsCoding: true,
     supportsReasoning: true,
     supportsMultilingual: true,
-    recommendedUseCases: ["private summarization", "budget drafting", "general assistant task"]
+    recommendedUseCases: ["private summarization", "budget drafting", "coding", "general assistant task"]
   }
 ];
 
