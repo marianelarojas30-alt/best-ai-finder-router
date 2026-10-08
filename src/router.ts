@@ -1,4 +1,5 @@
 import { AppConfig } from "./config.js";
+import { isLoopbackUrl } from "./localEndpoint.js";
 import { discoverModels } from "./modelDiscovery.js";
 import { RankedModel, rankModels } from "./modelRanker.js";
 import { RoutingMode } from "./modelRegistry.js";
@@ -17,7 +18,7 @@ export interface RouteDecision {
 export async function routeTask(prompt: string, mode: RoutingMode, config: AppConfig): Promise<RouteDecision> {
   const task = classifyTask(prompt);
 
-  if (mode === "private" && !isLoopbackOllama(config.OLLAMA_BASE_URL)) {
+  if (mode === "private" && !isLoopbackUrl(config.OLLAMA_BASE_URL)) {
     throw new Error("Private mode requires OLLAMA_BASE_URL to use localhost, 127.0.0.1, or ::1.");
   }
 
@@ -76,14 +77,3 @@ function asBullets(items: string[]): string[] {
   return items.map((item) => `- ${item}`);
 }
 
-
-function isLoopbackOllama(value: string | undefined): boolean {
-  if (!value) return false;
-  try {
-    const url = new URL(value);
-    const host = url.hostname.toLowerCase();
-    return host === "localhost" || host === "127.0.0.1" || host === "::1";
-  } catch {
-    return false;
-  }
-}

@@ -13,10 +13,10 @@ const secretPatterns = [
   { name: "Google API key", pattern: /AIza[0-9A-Za-z_-]{35}/g }
 ];
 
-const envRiskPatterns = [
+export const envRiskPatterns = [
   {
     name: "Public Ollama URL",
-    pattern: /OLLAMA_BASE_URL\s*=\s*https?:\/\/(?!localhost|127\.0\.0\.1|\[?::1\]?)/i,
+    pattern: /OLLAMA_BASE_URL\s*=\s*["']?https?:\/\/(?!(?:localhost|127\.0\.0\.1|\[::1\])(?::\d+)?(?:[\/\s"']|$))/im,
     message: "Keep OLLAMA_BASE_URL on localhost unless you intentionally secured remote access."
   }
 ];
