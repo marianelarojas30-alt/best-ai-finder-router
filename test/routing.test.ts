@@ -63,3 +63,48 @@ test("classifier still finds the intended task types", () => {
   assert.equal(classifyTask("Plan and compare two strategies").type, "complex reasoning");
   assert.equal(classifyTask("Translate the UI into all supported languages").type, "translation");
 });
+
+// Adversarial transport tests use two ephemeral loopback servers, never providers.
+import { createServer, Server } from "node:http";
+import { AddressInfo } from "node:net";
+import { ollamaProvider } from "../src/providers/ollama.js";
+
+async function listenLocal(server: Server): Promise<string> {
+  await new Promise<void>((resolve, reject) => {
+    server.once("error", reject);
+    server.listen(0, "127.0.0.1", resolve);
+  });
+  return `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
+}
+async function closeLocal(server: Server): Promise<void> {
+  server.closeAllConnections();
+  await new Promise<void>((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
+}
+
+for (const code of [301, 302, 303, 307, 308]) {
+  test(`local prompts and discovery never cross redirect ${code}`, async () => {
+    let forwarded = 0;
+    const sink = createServer((request, response) => {
+      forwarded += 1;
+      request.resume();
+      response.setHeader("Content-Type", "application/json");
+      response.end(JSON.stringify({ response: "synthetic", models: [] }));
+    });
+    const sinkUrl = await listenLocal(sink);
+    const origin = createServer((request, response) => {
+      request.resume();
+      response.writeHead(code, { Location: `${sinkUrl}/capture` });
+      response.end();
+    });
+    const originUrl = await listenLocal(origin);
+    const config = { OLLAMA_BASE_URL: originUrl, DEFAULT_MODE: "private" as const, BENCHMARK_CACHE_TTL_HOURS: 24 };
+    try {
+      await assert.rejects(ollamaProvider.sendMessage("fixture", "SYNTHETIC-PRIVATE", config), `redirect ${code}`);
+      await assert.rejects(ollamaProvider.discoverModels(config), `discovery redirect ${code}`);
+      assert.equal(forwarded, 0, "A redirect reached another endpoint");
+    } finally {
+      await closeLocal(origin);
+      await closeLocal(sink);
+    }
+  });
+}

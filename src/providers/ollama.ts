@@ -15,6 +15,7 @@ export const ollamaProvider = {
   async discoverModels(config: AppConfig): Promise<ModelInfo[]> {
     if (!config.OLLAMA_BASE_URL) return [];
     const response = await fetch(`${config.OLLAMA_BASE_URL.replace(/\/$/, "")}/api/tags`, {
+      redirect: "error",
       signal: AbortSignal.timeout(5_000)
     });
     if (!response.ok) throw new Error(`Ollama discovery failed: ${response.status}`);
@@ -27,6 +28,7 @@ export const ollamaProvider = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ model, prompt, stream: false }),
+      redirect: "error",
       signal: AbortSignal.timeout(120_000)
     });
     if (!response.ok) throw new Error(`Ollama request failed: ${response.status}`);
