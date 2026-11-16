@@ -1,6 +1,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { isLoopbackUrl } from "../src/localEndpoint.js";
 import { classifyTask } from "../src/taskClassifier.js";
@@ -108,3 +112,19 @@ for (const code of [301, 302, 303, 307, 308]) {
     }
   });
 }
+
+test("setup-keys creates the bundled template in the caller's project and preserves existing settings", () => {
+  const project = mkdtempSync(join(tmpdir(), "router-key-setup-"));
+  const cli = fileURLToPath(new URL("../src/index.ts", import.meta.url));
+  const command = ["--import", import.meta.resolve("tsx"), cli, "setup-keys", "--create-env"];
+  const envFile = join(project, ".env");
+  try {
+    execFileSync(process.execPath, command, { cwd: project });
+    assert.deepEqual(readFileSync(envFile), readFileSync(new URL("../.env.example", import.meta.url)));
+    writeFileSync(envFile, "DEFAULT_MODE=budget\n");
+    execFileSync(process.execPath, command, { cwd: project });
+    assert.equal(readFileSync(envFile, "utf8"), "DEFAULT_MODE=budget\n");
+  } finally {
+    rmSync(project, { recursive: true, force: true });
+  }
+});

@@ -75,6 +75,7 @@ Mode meaning:
 ## 6. Optional Global Command
 
 ```bash
+npm run build
 npm link
 best-ai-finder-router discover
 best-ai-finder-router route "Fix this TypeScript bug" --mode balanced

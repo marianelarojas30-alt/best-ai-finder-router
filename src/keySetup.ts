@@ -1,4 +1,5 @@
-import { access, copyFile } from "node:fs/promises";
+import { constants } from "node:fs";
+import { copyFile } from "node:fs/promises";
 
 export interface ProviderKeyInfo {
   provider: string;
@@ -47,12 +48,13 @@ export const providerKeyInfo: ProviderKeyInfo[] = [
 ];
 
 export async function ensureEnvFile(): Promise<"created" | "exists"> {
+  const template = new URL("../.env.example", import.meta.url);
   try {
-    await access(".env");
-    return "exists";
-  } catch {
-    await copyFile(".env.example", ".env");
+    await copyFile(template, ".env", constants.COPYFILE_EXCL);
     return "created";
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "EEXIST") return "exists";
+    throw error;
   }
 }
 
